@@ -8,7 +8,7 @@ const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const wrapAsync = require('./utils/wrapAsync.js');
 const ExpressError = require('./utils/ExpressError.js');
-const listingSchema = require('./schema.js');
+const {listingSchema,reviewSchema} = require('./schema.js'); //for server side validation
 app.use(methodOverride('_method'));
 app.set('view engine' , 'ejs');
 app.set('views' , path.join(__dirname,'views'));
@@ -25,6 +25,7 @@ async function main(){
 
 main();
 const Listing = require('./models/listing.js');
+const Review  = require('./models/review.js');
 const { nextTick } = require('process');
 
 
@@ -33,6 +34,7 @@ app.get('/' , (req,res)=>{
 })
 
 //middlewares
+
 const validateListing = (req,res,next)=>{
          const{error} = listingSchema.validate(req.body);
          if(error){
@@ -42,6 +44,15 @@ const validateListing = (req,res,next)=>{
          }
     }
 
+
+const validateReview = (req,res,next)=>{
+         const{error} = reviewSchema.validate(req.body);
+         if(error){
+            throw new ExpressError(400 , error)
+         }else{
+            next();
+         }
+    }
 
 
 
@@ -85,7 +96,7 @@ app.post('/listings' , validateListing, wrapAsync(async(req,res,next)=>{
 
 app.get('/listings/:id' , wrapAsync(async(req,res)=>{
     const {id} = req.params;
-    const data  = await Listing.findById(id);
+    const data  = await Listing.findById(id).populate('reviews')
     res.render('./listings/show.ejs' , {data});
 }))
 
@@ -111,11 +122,34 @@ app.put('/listings/:id' , validateListing ,wrapAsync(async(req,res)=>{
 
 app.delete('/listings/:id/delete' ,wrapAsync(async(req,res)=>{
     const {id} = req.params;
-    await  Listing.deleteOne({_id : id});
+    await  Listing.findByIdAndDelete(id) ;
     res.redirect('/listings');
 }))
 
+//sixth route for review
 
+app.post('/listing/:id/reviews' , validateReview , wrapAsync(async(req,res)=>{
+    
+    const listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review)
+
+    listing.reviews.push(newReview);
+
+    await newReview.save();
+    await listing.save();
+    res.redirect(`/listings/${listing._id}`);
+
+}))
+
+
+// delete review route
+
+app.delete('/listings/:id/reviews/:reviewId' , wrapAsync(async(req,res)=>{
+    const{id , reviewId } = req.params ; 
+    await Review.findByIdAndDelete(reviewId);
+    await Listing.findByIdAndUpdate(id,{$pull : {reviews : reviewId}});
+    res.redirect(`/listings/${id}`);
+}))
 
 
 
@@ -126,4 +160,5 @@ app.use((err,req,res,next)=>{
     // res.status(statusCode).send(message);
     
     res.render('./listings/error.ejs',{err});
+    
 })

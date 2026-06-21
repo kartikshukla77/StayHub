@@ -63,7 +63,7 @@ body{
     justify-content: space-evenly;
 }
 
-.card{
+.listing-card{
     border : none ! important;
     margin: 8px;
 }
