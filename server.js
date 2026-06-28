@@ -11,6 +11,8 @@ const {listingSchema,reviewSchema} = require('./schema.js'); //for server side v
 const { nextTick } = require('process');
 const listingRoutes = require('./routes/listing.js');
 const reviewRoutes = require('./routes/review.js');
+const session = require('express-session');
+const flash = require('connect-flash');  
 
 
 app.use(methodOverride('_method'));
@@ -19,6 +21,23 @@ app.set('views' , path.join(__dirname,'views'));
 app.use(express.urlencoded({extended:true}));
 app.engine('ejs' , ejsMate);
 app.use(express.static(path.join(__dirname ,'public')));
+app.use(express.json());
+
+
+
+
+const sessionOptions = {
+    secret : 'mysupersecretcode',
+    resave : false,
+    saveUninitialized : true,
+    cookie : {
+       expires : Date.now() + 7 *24 *60 *1000 ,// millisecnonds for seven days
+       maxAge : 7 *24 *60 *1000,
+       httpOnly : true
+    }
+}
+app.use(session(sessionOptions))
+app.use(flash());    
 
 async function main(){
     await mongoose.connect('mongodb://127.0.0.1:27017/test');
@@ -26,6 +45,12 @@ async function main(){
 }
 
 main();
+
+app.use((req,res,next)=>{
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 app.get('/' , (req,res)=>{
     res.render('./listings/firstpage.ejs');
