@@ -9,10 +9,17 @@ const ejsMate = require('ejs-mate');
 const ExpressError = require('./utils/ExpressError.js');
 const {listingSchema,reviewSchema} = require('./schema.js'); //for server side validation
 const { nextTick } = require('process');
+
 const listingRoutes = require('./routes/listing.js');
 const reviewRoutes = require('./routes/review.js');
+const userRoutes = require('./routes/user.js');
+
 const session = require('express-session');
 const flash = require('connect-flash');  
+
+const passport = require('passport');
+const LocalStrategy = require('passport-local')
+const User = require('./models/user.js')
 
 
 app.use(methodOverride('_method'));
@@ -39,6 +46,16 @@ const sessionOptions = {
 app.use(session(sessionOptions))
 app.use(flash());    
 
+
+
+app.use(passport.initialize());
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
+
 async function main(){
     await mongoose.connect('mongodb://127.0.0.1:27017/test');
     app.listen(port);
@@ -52,12 +69,16 @@ app.use((req,res,next)=>{
     next();
 })
 
+
 app.get('/' , (req,res)=>{
     res.render('./listings/firstpage.ejs');
 })
 
 app.use('/listings' , listingRoutes);
 app.use('/listings/:id/reviews'  , reviewRoutes);
+app.use('/'  , userRoutes);
+
+
 
 
 app.use((err,req,res,next)=>{
