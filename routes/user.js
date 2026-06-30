@@ -2,9 +2,10 @@ const express = require('express');
 const router  = express.Router();
 const wrapAsync = require('../utils/wrapAsync.js');
 const User = require('../models/user.js');
+const passport = require('passport');
 
 router.get('/signup' , (req,res)=>{
-  res.render('users/signup.ejs')
+  res.render('users/signup.ejs');
 })
 
 router.post('/signup', wrapAsync(async(req,res)=>{
@@ -23,4 +24,18 @@ router.post('/signup', wrapAsync(async(req,res)=>{
     
 }))
 
+
+
+router.get('/login' , (req,res)=>{
+    res.render('users/login.ejs');
+})
+
+router.post('/login' , passport.authenticate('local' ,{
+    failureRedirect : '/login',
+    failureFlash : true,
+    }) ,   
+    async(req,res)=>{
+    req.flash('success','welcome to stayhub you are logged in')
+    res.redirect('/listings');
+})
 module.exports = router;

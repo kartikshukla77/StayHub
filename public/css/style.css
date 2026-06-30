@@ -102,7 +102,7 @@ body{
 }
 .edit-btn{
      background-color: #fe424d !important;
-    border: none !important;
+     border: none !important;
 }
 
 .show-img{
@@ -118,4 +118,10 @@ body{
 .show-card{
     padding-left: 0;
     padding-right: 0;
+}
+
+/* login and signup btn */
+.login , .signup{
+     background-color: #fe424d !important;
+     border: none !important;
 }
