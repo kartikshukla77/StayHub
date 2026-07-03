@@ -66,6 +66,7 @@ main();
 app.use((req,res,next)=>{
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+    res.locals.currUser = req.user;  //for when to show the login logout signup option in the navbar
     next();
 })
 

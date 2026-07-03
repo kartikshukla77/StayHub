@@ -4,6 +4,7 @@ const wrapAsync = require('../utils/wrapAsync.js');
 const ExpressError = require('../utils/ExpressError.js');
 const {listingSchema} = require('../schema.js'); //for server side validation
 const Listing = require('../models/listing.js');
+const {isLoggedIn} = require('../middleware.js');
 
 
 //middlewares
@@ -31,11 +32,11 @@ router.get('/' , wrapAsync(async(req,res)=>{
 
 // Second route to Create a new listings
  
-router.get('/new' , (req,res)=>{
+router.get('/new' , isLoggedIn , (req,res)=>{
      res.render('./listings/newForm.ejs');
 })
 
-router.post('/' , validateListing, wrapAsync(async(req,res,next)=>{
+router.post('/' ,isLoggedIn, validateListing, wrapAsync(async(req,res,next)=>{
     
         // const {title,location,image,price,country ,description} = req.body;
     // const {listing} = req.body;
@@ -46,8 +47,10 @@ router.post('/' , validateListing, wrapAsync(async(req,res,next)=>{
     //     location : listing.location,
     //     country : listing.country
     // }).save()
-
-    await new Listing(req.body.listing).save();   // same as above just got this because we used object in name as listing 
+    const newListing = new Listing(req.body.listing);
+    newListing.owner = req.user._id;
+    await newListing.save();
+       // same as above just got this because we used object in name as listing 
     req.flash('success' , ' New listing created!')
     res.redirect('/listings');
     
@@ -62,7 +65,7 @@ router.post('/' , validateListing, wrapAsync(async(req,res,next)=>{
 
 router.get('/:id' , wrapAsync(async(req,res)=>{
     const {id} = req.params;
-    const data  = await Listing.findById(id).populate('reviews')
+    const data  = await Listing.findById(id).populate('reviews').populate('owner');
     if(!data){
         req.flash('error' , 'listing you requested for dose not exist');
          return res.redirect('/listings');
@@ -73,7 +76,7 @@ router.get('/:id' , wrapAsync(async(req,res)=>{
 // Fourth route to perform update 
 
 
-router.get('/:id/edit' , wrapAsync(async(req,res)=>{
+router.get('/:id/edit',isLoggedIn,wrapAsync(async(req,res)=>{
              const {id} = req.params;
              const data =  await Listing.findById(id);
              if(!data){
@@ -83,7 +86,9 @@ router.get('/:id/edit' , wrapAsync(async(req,res)=>{
 
              res.render('./listings/edit.ejs' , {data});
 }))
-router.put('/:id' , validateListing ,wrapAsync(async(req,res)=>{
+
+
+router.put('/:id' , isLoggedIn ,validateListing ,wrapAsync(async(req,res)=>{
      if(!req.body.listing){
         throw new ExpressError(400,'Send valid data');
      }
@@ -96,7 +101,7 @@ router.put('/:id' , validateListing ,wrapAsync(async(req,res)=>{
 
 //fifth route to delete
 
-router.delete('/:id/delete' ,wrapAsync(async(req,res)=>{
+router.delete('/:id/delete' ,isLoggedIn, wrapAsync(async(req,res)=>{
     const {id} = req.params;
     await  Listing.findByIdAndDelete(id) ;
     req.flash('success' , 'Listing Deleted !');
