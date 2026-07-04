@@ -1,25 +1,8 @@
 const express = require('express');
 const router  = express.Router();
 const wrapAsync = require('../utils/wrapAsync.js');
-const ExpressError = require('../utils/ExpressError.js');
-const {listingSchema} = require('../schema.js'); //for server side validation
 const Listing = require('../models/listing.js');
-const {isLoggedIn} = require('../middleware.js');
-
-
-//middlewares
-
-const validateListing = (req,res,next)=>{
-         const{error} = listingSchema.validate(req.body);
-         if(error){
-            throw new ExpressError(400 , error)
-         }else{
-            next();
-         }
-    }
-
-
-
+const {validateListing , isLoggedIn , isOwner} = require('../middleware.js');
 
 
 // First Route to Show all Listings
@@ -76,7 +59,7 @@ router.get('/:id' , wrapAsync(async(req,res)=>{
 // Fourth route to perform update 
 
 
-router.get('/:id/edit',isLoggedIn,wrapAsync(async(req,res)=>{
+router.get('/:id/edit',isLoggedIn, isOwner , wrapAsync(async(req,res)=>{
              const {id} = req.params;
              const data =  await Listing.findById(id);
              if(!data){
@@ -88,20 +71,24 @@ router.get('/:id/edit',isLoggedIn,wrapAsync(async(req,res)=>{
 }))
 
 
-router.put('/:id' , isLoggedIn ,validateListing ,wrapAsync(async(req,res)=>{
+router.put('/:id' , isLoggedIn , isOwner , validateListing ,wrapAsync(async(req,res)=>{
+
      if(!req.body.listing){
         throw new ExpressError(400,'Send valid data');
      }
     const{id} = req.params;
+    const listing = await Listing.findById(id);
+    
     await Listing.updateOne({_id : id} , req.body.listing);
     req.flash('success' , 'Listing updated!');
     res.redirect(`/listings/${id}`);
+    
 }))
 
 
 //fifth route to delete
 
-router.delete('/:id/delete' ,isLoggedIn, wrapAsync(async(req,res)=>{
+router.delete('/:id/delete' ,isLoggedIn, isOwner, wrapAsync(async(req,res)=>{
     const {id} = req.params;
     await  Listing.findByIdAndDelete(id) ;
     req.flash('success' , 'Listing Deleted !');
