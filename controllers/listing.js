@@ -1,9 +1,20 @@
 const Listing = require('../models/listing.js');
 
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const maptoken = process.env.MAP_TOKEN;
+const geocodingClient = mbxGeocoding({accessToken :maptoken });
+
 module.exports.index = async(req,res)=>{
   let allListings =  await Listing.find({});
   res.render('./listings/index.ejs' , {data : allListings});
 }
+
+module.exports.filter =  async(req,res,next)=>{
+    const {category} = req.query;
+    const allListings = await Listing.find({category : category});
+    res.render('listings/filter' , {data : allListings});
+};
+
 
 module.exports.newListingForm = (req,res)=>{
      res.render('./listings/newForm.ejs');
@@ -11,19 +22,26 @@ module.exports.newListingForm = (req,res)=>{
 
 
 module.exports.addNewListing = async(req,res,next)=>{
-    // const {title,location,image,price,country ,description} = req.body;
-    // const {listing} = req.body;
-    // await  new Listing({
-    //     title : listing.title,
-    //     description : listing.description,
-    //     price : listing.price,
-    //     location : listing.location,
-    //     country : listing.country
-    // }).save()
+  
+      let response  = await geocodingClient.forwardGeocode({
+         query: `${req.body.listing.location} , ${req.body.listing.country}`,
+         limit: 1
+          })
+       .send()
+       
+    // let coordinates = response.body.features[0].geometry.coordinates;
+       
+    let url = req.file.path;
+    let filename  = req.file.filename;
+
     const newListing = new Listing(req.body.listing);
+
     newListing.owner = req.user._id;
+    newListing.image = {url,filename};
+    newListing.geometry = response.body.features[0].geometry;
+
     await newListing.save();
-       // same as above just got this because we used object in name as listing 
+    
     req.flash('success' , ' New listing created!')
     res.redirect('/listings');  
 }
@@ -47,8 +65,9 @@ module.exports.editListingForm  = async(req,res)=>{
                req.flash('error' , 'listing you requested for dose not exist');
                return res.redirect('/listings');
              }
-
-             res.render('./listings/edit.ejs' , {data});
+            let originalImageUrl= data.image.url ;
+            originalImageUrl =  originalImageUrl.replace('/upload/' , '/upload/h_300,w_250/');
+             res.render('./listings/edit.ejs' , {data , originalImageUrl});
 }
 
 module.exports.updateEditListing = async(req,res)=>{
@@ -57,9 +76,16 @@ module.exports.updateEditListing = async(req,res)=>{
         throw new ExpressError(400,'Send valid data');
      }
     const{id} = req.params;
-    const listing = await Listing.findById(id);
-    
-    await Listing.updateOne({_id : id} , req.body.listing);
+    const listing = await Listing.findByIdAndUpdate(id,{...req.body.listing});
+    if(req.file){
+    const url = req.file.path;
+    const filename = req.file.filename;
+    listing.image.url = url;
+    listing.filename = filename;
+    // listing.image = { url: url, filename: filename };
+
+    await listing.save();
+    }
     req.flash('success' , 'Listing updated!');
     res.redirect(`/listings/${id}`);
     

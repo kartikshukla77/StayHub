@@ -1,0 +1,55 @@
+ <% layout('/layouts/boilerplate') %>
+ 
+
+ <%
+const icons = {
+  "Trending": "fa-fire text-danger",
+  "Rooms": "fa-bed text-primary",
+  "Iconic Cities": "fa-mountain-city text-warning",
+  "Mountains": "fa-mountain text-success",
+  "Castles": "fa-fort-awesome text-secondary",
+  "Amazing pools": "fa-person-swimming text-info",
+  "Camping": "fa-campground text-success",
+  "Farms": "fa-cow text-dark",
+  "Arctic": "fa-snowflake text-info",
+  "Domes": "fa-igloo text-primary",
+  "Boat": "fa-ship text-primary"
+};
+%>
+
+<div class="container my-4 ">
+    <div class="text-center">
+        <h2 class="fw-bold display-8">
+            <i class="fa-solid <%= icons[data[0].category] %> me-2"></i>
+            <%= data[0].category %> Stays
+        </h2>
+    </div>
+</div>
+
+
+
+
+ <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 mt-3">
+     
+   <% for(let list of data){ %>
+    
+    <a href="/listings/<%= list._id%>" class="listing_link"> 
+
+    <div class="card col listing-card"> 
+           <img class="card-img-top" src="<%=list.image.url%>" alt="listing_image" style="height: 20rem; "/>
+
+           <div class="card-img-overlay"> </div>
+
+        <div class="card-body">
+            <p class="card-text">
+                 <b><%= list.title %></b>  <br>
+                &#8377;<%= list.price.toLocaleString('en-IN') %>/night <br>
+                <i class="tax-info"> &nbsp; &nbsp; +18%GST</i>
+            </p>
+        </div>
+          
+    </div>
+</a>
+    <%  }  %>
+
+ </div>

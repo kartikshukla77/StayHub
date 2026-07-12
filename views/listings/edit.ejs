@@ -6,7 +6,7 @@
          <br>
         <h3  class="adj-margin" >Edit your list </h3>
          <br>
-           <form action="/listings/<%= data._id%>?_method=PUT" method="post" novalidate class="needs-validation">
+           <form action="/listings/<%= data._id%>?_method=PUT" method="post" novalidate class="needs-validation" enctype="multipart/form-data">
 
           <div class="mb-3">    
             <label for="title" class="form-label">Title</label>
@@ -28,12 +28,16 @@
           </div>
 
           <div class="mb-3" >
-            <label for="image" class="form-label">Image Link</label>
-            <input type="text" value="<%= data.image %>" name="listing[image]" id="" class="form-control" required> 
-             <div class="invalid-feedback">
-                    Enter the URL.
-                </div>
+             <img src="<%=originalImageUrl%>" alt="">
+            
           </div>
+
+          <div class="mb-3" >
+            <label for="image" class="form-label">Upload Image</label>
+             <input type="file"  name="listing[image]" id="" class="form-control"> 
+            
+          </div>
+
 
           <div class="row">
 
@@ -64,7 +68,38 @@
                 </div>
           </div>
 
-         
+          
+  <div class="mb-3">
+    <label for="category" class="form-label">Category</label>
+    <select
+        name="listing[category]"
+        id="category"
+        class="form-select"
+        required
+    >
+        <option value="" selected disabled>Select a category</option>
+        <option value="Trending">🔥 Trending</option>
+        <option value="Rooms">🛏️ Rooms</option>
+        <option value="Iconic Cities">🏙️ Iconic Cities</option>
+        <option value="Mountains">⛰️ Mountains</option>
+        <option value="Castles">🏰 Castles</option>
+        <option value="Amazing pools">🏊 Amazing Pools</option>
+        <option value="Camping">🏕️ Camping</option>
+        <option value="Farms">🐄 Farms</option>
+        <option value="Arctic">❄️ Arctic</option>
+        <option value="Domes">🏕️ Domes</option>
+        <option value="Boat">🚤 Boat</option>
+    </select>
+
+    <div class="invalid-feedback">
+        Select a category.
+    </div>
+</div>         
+
+
+
+
+
           
           <br><br>
          <button type="submit" class="btn btn-dark edit-btn">Edit</button>
