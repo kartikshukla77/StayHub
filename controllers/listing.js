@@ -15,6 +15,24 @@ module.exports.filter =  async(req,res,next)=>{
     res.render('listings/filter' , {data : allListings});
 };
 
+module.exports.search=  async(req,res,next)=>{
+ 
+    let {title} = req.query ;
+    title = title.trim();
+
+     if(!title){
+         return res.redirect('/listings');
+     }
+
+    let allListings = await Listing.find({title: {$regex:title , $options: "i"} });
+      if(allListings.length === 0){
+        req.flash('error', 'No listings found');
+        return res.redirect('/listings');
+    }
+    
+    res.render('listings/search' , {data : allListings} );
+};
+
 
 module.exports.newListingForm = (req,res)=>{
      res.render('./listings/newForm.ejs');

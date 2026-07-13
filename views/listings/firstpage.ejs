@@ -1,2 +1,127 @@
 <% layout('/layouts/boilerplate') %>
- <h1>welcome to the page</h1>
+ <% layout('/layouts/boilerplate') %>
+
+<style>
+.hero-section{
+    height: 85vh;
+    background-image: linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=80");
+
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    text-align:center;
+}
+
+.hero-content h1{
+    font-size:4rem;
+    font-weight:700;
+}
+
+.hero-content p{
+    font-size:1.3rem;
+}
+
+.explore-btn{
+    background-color:#fe424d;
+    color:white;
+    border-radius:25px;
+    padding:12px 30px;
+    border:none;
+}
+
+.explore-btn:hover{
+    background-color:#e63946;
+    color:white;
+}
+
+.category-card img{
+    height:200px;
+    object-fit:cover;
+    border-radius:15px;
+}
+</style>
+
+
+<div class="container mt-4">
+
+    <div class="hero-section">
+
+        <div class="hero-content">
+
+            <h1>
+                Find your next stay with StayHub
+            </h1>
+
+            <p>
+                Discover unique homes, peaceful escapes and unforgettable experiences across India.
+            </p>
+
+            <a href="/listings" class="btn explore-btn mt-3">
+                Explore Stays
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="mt-5">
+
+        <h2 class="fw-bold mb-4">
+            Explore popular stays
+        </h2>
+
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+                <div class="card category-card border-0">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80">
+                    <div class="card-body">
+                        <h5>Beach Escapes</h5>
+                        <p class="text-muted">
+                            Relax near beautiful beaches.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-4 mb-3">
+                <div class="card category-card border-0">
+                    <img src="https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?auto=format&fit=crop&w=800&q=80">
+                    <div class="card-body">
+                        <h5>Mountain Retreats</h5>
+                        <p class="text-muted">
+                            Stay close to nature.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-4 mb-3">
+                <div class="card category-card border-0">
+                    <img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80">
+                    <div class="card-body">
+                        <h5>Luxury Homes</h5>
+                        <p class="text-muted">
+                            Experience premium stays.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

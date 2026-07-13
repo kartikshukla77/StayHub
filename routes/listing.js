@@ -17,6 +17,8 @@ router.get('/' , wrapAsync(listingController.index));
 // To show Filtered Listings
 router.get('/category' , wrapAsync(listingController.filter));
 
+// To show Searched Listings
+router.get('/search' , wrapAsync(listingController.search));
 
 // To Create a new listings
  

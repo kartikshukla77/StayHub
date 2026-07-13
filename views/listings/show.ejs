@@ -21,18 +21,39 @@
 
 <br>
 
-<% if(currUser && data.owner._id.equals(currUser.id))  {%>
 
-<div class="btns">
-     <a href="/listings/<%=data._id%>/edit" class="btn btn-dark col-1 offset-3 edit-btn" > Edit</a>
+<div class="col-6 offset-3 mt-3">
+    <div class="d-flex gap-2">
 
-     <form action="/listings/<%=data._id%>/delete?_method=DELETE" method="post">
-        <button class="btn btn-dark offset-5" >Delete</button>
-    </form>
+        <% if(currUser && data.owner._id.equals(currUser.id)) { %>
 
+            <a href="/listings/<%=data._id%>/edit" class="btn btn-dark edit-btn">
+                Edit
+            </a>
+
+            <form action="/listings/<%=data._id%>/delete?_method=DELETE" method="post">
+                <button class="btn btn-dark">
+                    Delete
+                </button>
+            </form>
+
+        <% } %>
+
+        <% if(currUser){ %>
+
+            <a href="/listings/<%=data._id%>/book">
+                <button class="btn btn-success">
+                    Book Now
+                </button>
+             </a>
+
+        <% } %>
+
+    </div>
 </div>
 
-<% } %>
+
+
   
 
    <div class="col-8 offset-3 mb-3">

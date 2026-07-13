@@ -128,8 +128,9 @@ body{
 
 /* styling for map feature */
 #map{
-    height: 400px;
+    height: 300px;
     width: 80vh;
+    border-radius: 50%;
 }
 
 /* Styling for filters (index.ejs)*/

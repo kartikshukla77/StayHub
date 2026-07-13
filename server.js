@@ -79,10 +79,13 @@ app.get('/' , (req,res)=>{
     res.render('./listings/firstpage.ejs');
 })
 
+
+
+
+
 app.use('/listings' , listingRoutes);
 app.use('/listings/:id/reviews'  , reviewRoutes);
 app.use('/'  , userRoutes);
-
 
 
 app.use((err,req,res,next)=>{
