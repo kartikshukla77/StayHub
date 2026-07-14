@@ -171,3 +171,48 @@ body{
         color: #fe424d;
         background-color: rgb(252, 247, 247);
     }
+
+
+/* Styling for the booking page */
+
+
+
+.booking-box{
+    border-radius:1rem;
+    box-shadow:0 5px 20px rgba(0,0,0,0.15);
+    overflow:hidden;
+    background:white;
+}
+
+.booking-title{
+    background:#fe424d;
+    color:white;
+    text-align:center;
+    padding:1rem;
+    margin:0;
+}
+
+.booking-img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    border-radius:1rem;
+}
+
+.booking-input{
+    height:45px;
+    border-radius:10px;
+}
+
+.booking-btn{
+    width:100%;
+    height:45px;
+    border:none;
+    border-radius:10px;
+    background:#222;
+    color:white;
+}
+
+.booking-btn:hover{
+    background:#fe424d;
+}

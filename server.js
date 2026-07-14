@@ -83,6 +83,17 @@ app.get('/' , (req,res)=>{
 
 
 
+
+app.get('/listings/:id/book' , async(req,res,next)=>{
+
+     const listing = await Listing.findById(req.params.id);
+
+    res.render("bookings/bookForm", {listing});
+})
+
+
+
+
 app.use('/listings' , listingRoutes);
 app.use('/listings/:id/reviews'  , reviewRoutes);
 app.use('/'  , userRoutes);
