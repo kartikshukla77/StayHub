@@ -9,7 +9,7 @@ module.exports.signup = async(req,res)=>{
       try{
       let {username,email,password} = req.body;
       const newUser = new User({email,username});
-      const registerdUser = await  User.register(newUser , password);  // won't  allow to enter already entered username (not for email) 
+      const registerdUser = await  User.register(newUser , password);  // won't  allow to enter already entered username (not for email)
       req.login(registerdUser , (err)=>{
         if(err){
           next(err);

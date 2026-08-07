@@ -17,6 +17,9 @@ const reviewRoutes = require('./routes/review.js');
 const userRoutes = require('./routes/user.js');
 
 const session = require('express-session');
+const { MongoStore } = require("connect-mongo");
+
+
 const flash = require('connect-flash');  
 
 const passport = require('passport');
@@ -34,10 +37,26 @@ app.use(express.static(path.join(__dirname ,'public')));
 app.use(express.json());
 
 
+const dburl = process.env.ATLASDB_URL;
+
+const store = MongoStore.create({
+    mongoUrl : dburl,
+    crypto: {
+        secret : process.env.SECRET,
+    },
+    touchAfter : 24 * 3600
+})
+store.on("error",  ()=>{
+    console.log("Error in mongo session store" , err);
+})
+store.on("connected",  ()=>{
+    console.log("mongoose connected");
+})
 
 
 const sessionOptions = {
-    secret : 'mysupersecretcode',
+    store,
+    secret : process.env.SECRET,
     resave : false,
     saveUninitialized : true,
     cookie : {
@@ -46,6 +65,7 @@ const sessionOptions = {
        httpOnly : true
     }
 }
+
 app.use(session(sessionOptions))
 app.use(flash());    
 
@@ -58,14 +78,16 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 
-// const dburl = process.env.ATLASDB_URL;
-
 async function main(){
-    await mongoose.connect('mongodb://127.0.0.1:27017/test');
+     await mongoose.connect(dburl);
     app.listen(port);
 }
 
+
+
+
 main();
+
 
 app.use((req,res,next)=>{
     res.locals.success = req.flash('success');

@@ -1,14 +1,20 @@
 const initData = require('./data.js');
 const mongoose = require('mongoose');
 const listing = require('../models/listing.js');
+require('dotenv').config({
+    path: '../.env'
+});
+
+
+
 
 
 async function main(){
-    await mongoose.connect('mongodb://127.0.0.1:27017/test');
+    await mongoose.connect(process.env.ATLASDB_URL);
     await listing.deleteMany({});
     initData.data = initData.data.map((obj)=>({
         ...obj,
-        owner:'6a48901d863fa6222e9aa1d5',
+        owner:'6a7557730c3917e1b31f7f60',
     }))
     await listing.insertMany(initData.data);
    
